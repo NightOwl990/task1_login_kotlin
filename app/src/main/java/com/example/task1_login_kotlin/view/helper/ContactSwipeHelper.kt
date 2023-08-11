@@ -45,7 +45,6 @@ class ContactSwipeHelper(private val adapter: ContactsAdapter) :
                     itemView.right.toFloat(),
                     itemView.bottom.toFloat())
                 c.drawRect(background, p)
-//                val icon = BitmapFactory.decodeResource(App.instance.applicationContext.resources, R.drawable.ic_notify)
 
                 val margin = (dX / 5 - width) / 2
                 val iconDest =
