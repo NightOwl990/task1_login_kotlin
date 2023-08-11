@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="SplashFrg"
+            type="com.example.task1_login_kotlin.view.fragment.SplashFragment" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimens_200"
+            android:layout_gravity="center"
+            android:layout_marginBottom="50dp"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="Logo.json"
+            app:lottie_loop="true" />
+    </LinearLayout>
+</layout>

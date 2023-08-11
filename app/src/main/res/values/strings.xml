@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">task1_login_kotlin</string>
+    <string name="txt_welcome">Welcome Back</string>
+    <string name="txt_intro">Login back into your account</string>
+    <string name="txt_login">Log In</string>
+    <string name="txt_phone">Phone number</string>
+    <string name="txt_password">Password</string>
+    <string name="txt_forgot_password">Forgot Password ?</string>
+    <string name="txt_dont_have">Don\'t have an account yet?</string>
+    <string name="txt_join_now">Join Now</string>
+    <string name="txt_no_internet">No Internet</string>
+    <string name="txt_content_check_network">Please check your connection status and try again</string>
+    <string name="txt_please_wait">Please wait ...</string>
+    <string name="txt_remember_password">Remember password</string>
+    <string name="txt_incorrect">Incorrect account or password</string>
+    <string name="txt_success">Login is successfully</string>
+    <string name="txt_home">Home</string>
+    <string name="txt_contacts">Contact</string>
+    <string name="txt_danh_ba">Danh bạ</string>
+    <string name="txt_sync">Đồng bộ</string>
+    <string name="txt_search">Nhập từ khoá tìm kiếm</string>
+    <string name="txt_name">Nguyen Van A</string>
+    <string name="txt_phone_contact">0123-456-780</string>
+    <string name="txt_alpha">A</string>
+    <string name="txt_todo">todo</string>
+    <string name="txt_add_contact">Add Contact</string>
+    <string name="txt_contact_person_name">Contact person name</string>
+    <string name="txt_phone_number">Phone number</string>
+    <string name="txt_add">Add</string>
+    <string name="txt_cancel">Cancel</string>
+</resources>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blackAlpha">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="40dp"
+            android:background="@drawable/bg_rounded"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="20dp"
+            tools:ignore="UselessParent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="monospace"
+                android:text="@string/txt_add_contact"
+                android:textColor="@color/black"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edt_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:autofillHints="TODO"
+                android:fontFamily="monospace"
+                android:hint="@string/txt_contact_person_name"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/edt_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:autofillHints="TODO"
+                android:fontFamily="monospace"
+                android:hint="@string/txt_phone_number"
+                android:inputType="phone"
+                android:maxLength="10" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btn_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="monospace"
+                    android:text="@string/txt_add"
+                    android:textColor="@color/white"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/btn_cacel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/black"
+                    android:fontFamily="monospace"
+                    android:text="@string/txt_cancel"
+                    android:textColor="@color/white"
+                    tools:ignore="ButtonStyle" />
+            </TableRow>
+        </LinearLayout>
+    </FrameLayout>
+</layout>

@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Task1_login_kotlin" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/colorRed</item>
+        <item name="colorPrimaryVariant">@color/colorGray</item>
+        <item name="colorOnPrimary">@color/colorRed</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/colorRed</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/colorRed</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+
+    </style>
+
+    <style name="Circular">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">60dp</item>
+        <item name="cornerSizeBottomLeft">55dp</item>
+        <item name="cornerSizeBottomRight">55dp</item>
+    </style>
+
+    <style name="Dialog_FullScreen" parent="@style/Theme.Task1_login_kotlin">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+</resources>
