@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.namespace.R
 import com.example.task1_login_kotlin.database.entities.Contact
 
-class ContactListAdapter(private val listContacts: List<Contact>) :
+class ContactListAdapter(private val listContacts: MutableList<Contact>) :
     RecyclerView.Adapter<ContactListAdapter.ContactViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_contact_list, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_contact_list, parent, false)
         return ContactViewHolder(itemView)
     }
 

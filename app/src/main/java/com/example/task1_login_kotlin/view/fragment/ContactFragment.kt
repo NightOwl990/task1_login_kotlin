@@ -14,12 +14,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.namespace.databinding.FragmentContactBinding
 import com.example.task1_login_kotlin.App
 import com.example.task1_login_kotlin.database.entities.Contact
 import com.example.task1_login_kotlin.view.adapter.ContactsAdapter
+import com.example.task1_login_kotlin.view.helper.ContactSwipeHelper
 import com.example.task1_login_kotlin.view.interfaces.TextChangeAdapter
 import com.example.task1_login_kotlin.viewmodel.CommonViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -76,7 +78,7 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
 
     private fun updateUI(updatedContacts: List<Contact>) {
         val groupedContacts = updatedContacts.sortedBy { it.name }.groupBy { it.name[0] }
-        val contactsAdapter = ContactsAdapter(groupedContacts)
+        val contactsAdapter = ContactsAdapter(groupedContacts as MutableMap<Char, List<Contact>>)
         binding.rcvContact.adapter = contactsAdapter
     }
 
@@ -148,7 +150,10 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
         CoroutineScope(Dispatchers.Main).launch {
             val groupedContacts = mlist.sortedBy { it.name }.groupBy { it.name[0] }
             val layoutManager = LinearLayoutManager(mContext)
-            val contactsAdapter = ContactsAdapter(groupedContacts)
+            val contactsAdapter = ContactsAdapter(groupedContacts as MutableMap<Char, List<Contact>>)
+            val swipeToDeleteCallback = ContactSwipeHelper(contactsAdapter)
+            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+            itemTouchHelper.attachToRecyclerView(binding.rcvContact)
             binding.rcvContact.layoutManager = layoutManager
             binding.rcvContact.adapter = contactsAdapter
         }
