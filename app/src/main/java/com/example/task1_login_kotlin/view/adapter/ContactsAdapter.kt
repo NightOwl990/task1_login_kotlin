@@ -1,6 +1,7 @@
 package com.example.task1_login_kotlin.view.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,32 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.namespace.R
 import com.example.task1_login_kotlin.database.entities.Contact
+import com.example.task1_login_kotlin.view.interfaces.OnDeleteContactCallBack
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class ContactsAdapter(private var contacts: MutableMap<Char, List<Contact>>) :
-    RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
+class ContactsAdapter(var context: Context, private var contacts: MutableMap<Char, List<Contact>>) :
+    RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>(), OnDeleteContactCallBack{
+    private lateinit var callBack: OnDeleteContactCallBack
+    fun setCallBack(callBack: OnDeleteContactCallBack){
+        this.callBack = callBack
+    }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun setData(newData: List<Contact>) {
+        contacts.clear()
+        val groupedContacts = newData.sortedBy { it.name }.groupBy { it.name[0] }
+        contacts = groupedContacts as MutableMap<Char, List<Contact>>
+        CoroutineScope(Dispatchers.Main).launch {
+            notifyDataSetChanged()
+        }
+    }
+
+    private lateinit var contactListAdapter: ContactListAdapter
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
         return ContactViewHolder(itemView)
     }
 
@@ -29,29 +50,18 @@ class ContactsAdapter(private var contacts: MutableMap<Char, List<Contact>>) :
     inner class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(char: Char, contactList: MutableList<Contact>) {
             itemView.findViewById<TextView>(R.id.tv_char).text = char.toString()
-            val recyclerView = itemView.findViewById<RecyclerView>(R.id.tv_group_contact)
+            val recyclerView = itemView.findViewById<RecyclerView>(R.id.rv_group_contact)
 
-            val contactListAdapter = ContactListAdapter(contactList)
+            contactListAdapter = ContactListAdapter(contactList)
+            contactListAdapter.setCallBack(this@ContactsAdapter)
             recyclerView.adapter = contactListAdapter
             recyclerView.layoutManager = LinearLayoutManager(itemView.context)
+
         }
     }
-
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun removeContact(groupIndex: Char, contact: Contact) {
-        val updatedContactsInGroup = contacts[groupIndex]?.toMutableList()
-        updatedContactsInGroup?.remove(contact)
-        contacts[groupIndex] = updatedContactsInGroup ?: listOf()
-        notifyDataSetChanged()
+    override fun updateRecyclerUI(list: List<Contact>) {
+        callBack.updateRecyclerUI(list)
     }
 
-    fun getContact(groupIndex: Char, positionInGroup: Int): Contact? {
-        val contactsInGroup = contacts[groupIndex] ?: return null
-        if (positionInGroup in contactsInGroup.indices) {
-            return contactsInGroup[positionInGroup]
-        }
-        return null
-    }
 
 }

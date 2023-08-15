@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }  // Thêm để dùng được thư viện mã nguồn mở trên github
     }
 }
 rootProject.name = "task1_login_kotlin"

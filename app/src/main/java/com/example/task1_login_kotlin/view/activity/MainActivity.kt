@@ -100,8 +100,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, CommonViewModel>(), OnBot
                     Toast.makeText(App.instance, message, Toast.LENGTH_SHORT).show()
                 }
             } else {
-                App.instance.getDb().contactDao()
-                    .insertContact(Contact(name, editPhoneNumber(phone)))
+                App.instance.getDb().contactDao().insertContact(Contact(name, editPhoneNumber(phone)))
+
             }
         }
     }

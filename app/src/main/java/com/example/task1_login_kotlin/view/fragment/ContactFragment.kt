@@ -3,6 +3,7 @@ package com.example.task1_login_kotlin.view.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
@@ -11,17 +12,18 @@ import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.appcompat.R
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.namespace.databinding.FragmentContactBinding
 import com.example.task1_login_kotlin.App
 import com.example.task1_login_kotlin.database.entities.Contact
 import com.example.task1_login_kotlin.view.adapter.ContactsAdapter
-import com.example.task1_login_kotlin.view.helper.ContactSwipeHelper
+import com.example.task1_login_kotlin.view.interfaces.OnDeleteContactCallBack
 import com.example.task1_login_kotlin.view.interfaces.TextChangeAdapter
 import com.example.task1_login_kotlin.viewmodel.CommonViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +32,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.Normalizer
 
-class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() {
+class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
+    OnDeleteContactCallBack {
     companion object {
         val TAG: String = ContactFragment::class.java.name
     }
@@ -38,6 +41,7 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
     private var filteredContacts: List<Contact> = emptyList()
     private var mlist = ArrayList<Contact>()
     var listBasket: ArrayList<Contact> = arrayListOf()
+    private lateinit var contactsAdapter: ContactsAdapter
 
     override fun initViewModel(): Class<CommonViewModel> = CommonViewModel::class.java
 
@@ -52,11 +56,27 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
         checkPermissionAndLoadData()
         showAndHideWhenScrollView()
         searchContact()
+        binding.trSync.setOnClickListener {
+            it.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.abc_fade_in))
+            CoroutineScope(Dispatchers.IO).launch {
+                App.instance.getDb().contactDao().deleteAllContact()
+                listBasket.clear()
+                val listA = async {
+                    listBasket = App.instance.getDb().contactDao().getAllContact() as ArrayList<Contact>
+                }
+                listA.await()
+                Log.i("DB", "$listBasket")
+                if (listBasket.size > 0) mlist = listBasket else getContactAndSaveIntoRoomDB()
+                setDataForRecyclerView()
+            }
+        }
     }
 
     private fun searchContact() {
         binding.edtSearchContact.addTextChangedListener(object : TextChangeAdapter {
-            override fun afterTextChanged(s: Editable) { performSearch(s.toString())}
+            override fun afterTextChanged(s: Editable) {
+                performSearch(s.toString())
+            }
         })
     }
 
@@ -78,8 +98,10 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
 
     private fun updateUI(updatedContacts: List<Contact>) {
         val groupedContacts = updatedContacts.sortedBy { it.name }.groupBy { it.name[0] }
-        val contactsAdapter = ContactsAdapter(groupedContacts as MutableMap<Char, List<Contact>>)
+        val contactsAdapter =
+            ContactsAdapter(mContext, groupedContacts as MutableMap<Char, List<Contact>>)
         binding.rcvContact.adapter = contactsAdapter
+        contactsAdapter.setCallBack(this@ContactFragment)
     }
 
     private fun showAndHideWhenScrollView() {
@@ -98,10 +120,13 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS)
             != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mContext as Activity,
-                arrayOf(Manifest.permission.READ_CONTACTS), 999)
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                999)
         } else {
             CoroutineScope(Dispatchers.IO).launch {
-                val listA = async { listBasket = App.instance.getDb().contactDao().getAllContact() as ArrayList<Contact> }
+                val listA = async {
+                    listBasket = App.instance.getDb().contactDao().getAllContact() as ArrayList<Contact>
+                }
                 listA.await()
                 Log.i("DB", "$listBasket")
                 if (listBasket.size > 0) mlist = listBasket else getContactAndSaveIntoRoomDB()
@@ -118,20 +143,27 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
         if ((cursor?.count ?: 0) > 0) {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    val id: String = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID))
+                    val id: String =
+                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID))
 
                     val columnName = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
-                    val name: String = if (columnName != -1 && !cursor.isNull(columnName))
-                    { cursor.getString(columnName) } else continue
+                    val name: String = if (columnName != -1 && !cursor.isNull(columnName)) {
+                        cursor.getString(columnName)
+                    } else continue
 
                     val uriPhone: Uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-                    val selection: String = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
-                    val phoneCursor: Cursor? = mContext.contentResolver.query(uriPhone, null, selection, arrayOf(id), null)
+                    val selection: String =
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
+                    val phoneCursor: Cursor? =
+                        mContext.contentResolver.query(uriPhone, null, selection, arrayOf(id), null)
                     if (phoneCursor != null && phoneCursor.moveToNext()) {
 
-                        val columnPhone = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                        val phone: String = if (columnPhone != -1 && !phoneCursor.isNull(columnPhone))
-                        { phoneCursor.getString(columnPhone) } else continue
+                        val columnPhone =
+                            phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                        val phone: String =
+                            if (columnPhone != -1 && !phoneCursor.isNull(columnPhone)) {
+                                phoneCursor.getString(columnPhone)
+                            } else continue
                         phoneCursor.close()
 
                         CoroutineScope(Dispatchers.IO).launch {
@@ -150,12 +182,10 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
         CoroutineScope(Dispatchers.Main).launch {
             val groupedContacts = mlist.sortedBy { it.name }.groupBy { it.name[0] }
             val layoutManager = LinearLayoutManager(mContext)
-            val contactsAdapter = ContactsAdapter(groupedContacts as MutableMap<Char, List<Contact>>)
-            val swipeToDeleteCallback = ContactSwipeHelper(contactsAdapter)
-            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-            itemTouchHelper.attachToRecyclerView(binding.rcvContact)
+            contactsAdapter = ContactsAdapter(mContext, groupedContacts as MutableMap<Char, List<Contact>>)
             binding.rcvContact.layoutManager = layoutManager
             binding.rcvContact.adapter = contactsAdapter
+            contactsAdapter.setCallBack(this@ContactFragment)
         }
     }
 
@@ -164,18 +194,31 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>() 
         val cleanedSpace = cleanedChar.replace(" ", "")
         val cleanedRegion = cleanedSpace.replace("+84", "0")
         if (cleanedRegion.length == 10) {
-            return "${cleanedRegion.substring(0, 4)}-${cleanedRegion.substring(4, 7)}-${cleanedRegion.substring(7)}"
+            return "${cleanedRegion.substring(0, 4)}-${cleanedRegion.substring(4,
+                7)}-${cleanedRegion.substring(7)}"
         }
         return cleanedRegion
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int,
+        permissions: Array<out String>, grantResults: IntArray, ) {
         if (requestCode == 999 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             getContactAndSaveIntoRoomDB()
             return
         }
         Toast.makeText(mContext, "Please allow access to contacts", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun updateRecyclerUI(list: List<Contact>) {
+        contactsAdapter.setData(list)
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(mContext, "Delete complete", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun updateUIAfterAddContact(list: List<Contact>){
+        contactsAdapter.setData(list)
     }
 }
 
