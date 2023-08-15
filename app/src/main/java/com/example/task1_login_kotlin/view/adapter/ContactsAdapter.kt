@@ -21,6 +21,7 @@ class ContactsAdapter(var context: Context, private var contacts: MutableMap<Cha
     fun setCallBack(callBack: OnDeleteContactCallBack){
         this.callBack = callBack
     }
+    private lateinit var contactListAdapter: ContactListAdapter
 
     @SuppressLint("NotifyDataSetChanged")
     fun setData(newData: List<Contact>) {
@@ -32,10 +33,8 @@ class ContactsAdapter(var context: Context, private var contacts: MutableMap<Cha
         }
     }
 
-    private lateinit var contactListAdapter: ContactListAdapter
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
         return ContactViewHolder(itemView)
     }
 
@@ -62,6 +61,5 @@ class ContactsAdapter(var context: Context, private var contacts: MutableMap<Cha
     override fun updateRecyclerUI(list: List<Contact>) {
         callBack.updateRecyclerUI(list)
     }
-
 
 }

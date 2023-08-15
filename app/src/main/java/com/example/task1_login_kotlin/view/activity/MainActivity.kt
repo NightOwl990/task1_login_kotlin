@@ -101,9 +101,13 @@ class MainActivity : BaseActivity<ActivityMainBinding, CommonViewModel>(), OnBot
                 }
             } else {
                 App.instance.getDb().contactDao().insertContact(Contact(name, editPhoneNumber(phone)))
-
+                updateRecyclerView()
             }
         }
+    }
+
+    private fun updateRecyclerView() {
+
     }
 
     private fun editPhoneNumber(phoneNumber: String): String {

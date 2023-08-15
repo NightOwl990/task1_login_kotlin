@@ -45,10 +45,8 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
 
     override fun initViewModel(): Class<CommonViewModel> = CommonViewModel::class.java
 
-    override fun initViewDataBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-    ): FragmentContactBinding = FragmentContactBinding.inflate(inflater, container, false)
+    override fun initViewDataBinding(inflater: LayoutInflater, container: ViewGroup?, ):
+            FragmentContactBinding = FragmentContactBinding.inflate(inflater, container, false)
 
 
     override fun initViews() {
@@ -97,11 +95,7 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
     }
 
     private fun updateUI(updatedContacts: List<Contact>) {
-        val groupedContacts = updatedContacts.sortedBy { it.name }.groupBy { it.name[0] }
-        val contactsAdapter =
-            ContactsAdapter(mContext, groupedContacts as MutableMap<Char, List<Contact>>)
-        binding.rcvContact.adapter = contactsAdapter
-        contactsAdapter.setCallBack(this@ContactFragment)
+        contactsAdapter.setData(updatedContacts)
     }
 
     private fun showAndHideWhenScrollView() {
@@ -211,14 +205,13 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
     }
 
     override fun updateRecyclerUI(list: List<Contact>) {
+        mlist = list as ArrayList<Contact>
         contactsAdapter.setData(list)
+
         CoroutineScope(Dispatchers.Main).launch {
+            binding.edtSearchContact.setText("")
             Toast.makeText(mContext, "Delete complete", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    fun updateUIAfterAddContact(list: List<Contact>){
-        contactsAdapter.setData(list)
     }
 }
 

@@ -16,7 +16,6 @@ import com.example.task1_login_kotlin.database.entities.Contact
 import com.example.task1_login_kotlin.view.interfaces.OnDeleteContactCallBack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ContactListAdapter(private var listContacts: MutableList<Contact>) :
@@ -55,7 +54,7 @@ class ContactListAdapter(private var listContacts: MutableList<Contact>) :
                     App.instance.getDb().contactDao().deleteContact(contact)
                     listContacts = App.instance.getDb().contactDao().getAllContact().toMutableList()
                     callBack.updateRecyclerUI(listContacts)
-                    Log.i(TAG, "Size list: " + listContacts.size)
+                    Log.i(TAG, "Size list: $listContacts")
                 }
             }
 
