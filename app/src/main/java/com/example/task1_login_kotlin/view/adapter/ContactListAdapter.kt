@@ -46,6 +46,7 @@ class ContactListAdapter(private var listContacts: MutableList<Contact>) :
         private val tvAlpha: TextView = itemView.findViewById(R.id.tv_alpha)
         private val swipeRevealLayout: SwipeRevealLayout = itemView.findViewById(R.id.swipeRevealLayout)
         private val layoutDelete: LinearLayout = itemView.findViewById(R.id.layout_delete)
+        private val foregroundLayout: LinearLayout = itemView.findViewById(R.id.foreground_layout)
 
         fun bind(contact: Contact) {
             viewBinderHelper.bind(swipeRevealLayout, contact.id.toString())
@@ -64,11 +65,14 @@ class ContactListAdapter(private var listContacts: MutableList<Contact>) :
             tvAlpha.text = first
             val color = generateColorFromLetter(first.first())
             tvAlpha.setTextColor(color)
+
+            foregroundLayout.setOnClickListener{
+                callBack.callPhone(tvPhone.text.toString())
+            }
         }
     }
 
 }
-
 
 private fun generateColorFromLetter(letter: Char): Int {
     val uniqueValue = letter.code % 26          // Chuyển mã ASCII thành giá trị từ 0 đến 25

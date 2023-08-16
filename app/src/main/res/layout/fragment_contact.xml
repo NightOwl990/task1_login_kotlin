@@ -10,11 +10,11 @@
         android:orientation="vertical">
 
         <ImageView
-            android:padding="5dp"
             android:id="@+id/ic_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="11dp"
+            android:padding="5dp"
             android:src="@drawable/ic_back"
             tools:ignore="ContentDescription" />
 

@@ -62,4 +62,8 @@ class ContactsAdapter(var context: Context, private var contacts: MutableMap<Cha
         callBack.updateRecyclerUI(list)
     }
 
+    override fun callPhone(phone: String) {
+        callBack.callPhone(phone)
+    }
+
 }

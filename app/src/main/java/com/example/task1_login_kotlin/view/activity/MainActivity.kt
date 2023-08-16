@@ -107,7 +107,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, CommonViewModel>(), OnBot
     }
 
     private fun updateRecyclerView() {
-
+        // updateUI
     }
 
     private fun editPhoneNumber(phoneNumber: String): String {

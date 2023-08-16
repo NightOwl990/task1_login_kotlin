@@ -4,4 +4,5 @@ import com.example.task1_login_kotlin.database.entities.Contact
 
 interface OnDeleteContactCallBack {
     fun updateRecyclerUI(list : List<Contact>)
+    fun callPhone(phone: String)
 }

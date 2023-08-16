@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
@@ -37,7 +38,7 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
     companion object {
         val TAG: String = ContactFragment::class.java.name
     }
-
+    private lateinit var phoneNumber: String
     private var filteredContacts: List<Contact> = emptyList()
     private var mlist = ArrayList<Contact>()
     var listBasket: ArrayList<Contact> = arrayListOf()
@@ -67,6 +68,10 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
                 if (listBasket.size > 0) mlist = listBasket else getContactAndSaveIntoRoomDB()
                 setDataForRecyclerView()
             }
+        }
+
+        binding.icBack.setOnClickListener{
+
         }
     }
 
@@ -197,11 +202,18 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(requestCode: Int,
         permissions: Array<out String>, grantResults: IntArray, ) {
-        if (requestCode == 999 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getContactAndSaveIntoRoomDB()
-            return
+        if (requestCode == 999){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                return
+            }
+            Toast.makeText(mContext, "Please allow access to contacts", Toast.LENGTH_SHORT).show()
+        } else if (requestCode == 998){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                callPhoneNumber(phoneNumber)
+                return
+            }
+            Toast.makeText(mContext, "Please allow access to call phone", Toast.LENGTH_SHORT).show()
         }
-        Toast.makeText(mContext, "Please allow access to contacts", Toast.LENGTH_SHORT).show()
     }
 
     override fun updateRecyclerUI(list: List<Contact>) {
@@ -212,6 +224,26 @@ class ContactFragment : BaseFragment<FragmentContactBinding, CommonViewModel>(),
             binding.edtSearchContact.setText("")
             Toast.makeText(mContext, "Delete complete", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun callPhone(phone: String) {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CALL_PHONE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mContext as Activity,
+                arrayOf(Manifest.permission.CALL_PHONE),
+                998)
+        } else {
+            phoneNumber = phone
+            callPhoneNumber(phone)
+        }
+    }
+
+    private fun callPhoneNumber(phone: String) {
+        val intent = Intent()
+        intent.action = Intent.ACTION_DIAL
+        intent.data = Uri.parse("tel:$phone")
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        ContextCompat.startActivity(App.instance.applicationContext, intent, null)
     }
 }
 
